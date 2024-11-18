@@ -1,0 +1,41 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
+logs/
+
+# Diretórios e arquivos específicos de ambientes de desenvolvimento
+.idea/              # JetBrains IDEs (ex: WebStorm, PhpStorm)
+.vscode/            # Visual Studio Code
+.DS_Store           # macOS
+
+# Arquivos de ambiente
+.env                # Arquivo de variáveis de ambiente
+
+# Build outputs
+dist/
+build/
+
+# Arquivos temporários
+*.swp               # Arquivos temporários do vim
+*.swo
+
+# Dependency directories
+coverage/           # Diretório de cobertura de testes
+*.tgz               # Pacotes gerados pelo npm ou yarn
+
+# Arquivos específicos do sistema
+Thumbs.db           # Arquivo gerado no Windows
+ehthumbs.db         # Arquivo gerado no Windows
+*.bak               # Arquivos de backup
+
+# Arquivos de configuração de editor
+.vscode/
+.idea/
+
+# Outros arquivos específicos
+*.pem               # Chaves privadas
+*.key               # Chaves privadas
