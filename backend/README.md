@@ -67,7 +67,7 @@ Criar uma plataforma de **assinatura de conteúdo exclusivo** onde usuários pod
 
 #### **4. Funcionalidades Detalhadas**:
 
-- **Cadastro e Login (JWT)**: 
+- **Cadastro e Login (JWT)**:  
   - Registro com e-mail, nome e senha.
   - Login gera um token JWT para futuras requisições.
 
