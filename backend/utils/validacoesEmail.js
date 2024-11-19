@@ -11,6 +11,11 @@ class EmailValide {
       throw new Error("Invalid email");
     }
 
+
+    if (!this.#email) {
+        throw new Error("please send email");  
+    }
+
     return true;
   }
 }
