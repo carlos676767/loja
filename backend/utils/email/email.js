@@ -1,0 +1,36 @@
+
+class email {
+  static nodemailer = require("nodemailer");
+  static #configEmail() {
+    const config = this.nodemailer.createTransport({
+      service: "yahoo",
+      auth: {
+        user:process.env.EMAIL_YAHOO,
+        pass: process.env.SENHA_APLICATIVO_YAHOO,
+      },
+    });
+    return config;
+  }
+
+  static async sendEmail(text, emailUser, textTittle) {
+    console.log(process.env.EMAIL_YAHOO);
+    
+    try {
+      const email = this.#configEmail();
+      return await email.sendMail({
+        from: process.env.EMAIL_YAHOO,
+        to: emailUser,
+        subject: textTittle,
+        text: text ,
+      });
+    } catch (error) {
+      console.log(error);
+      
+      throw new Error(`error sending email`)
+     
+    }
+  }
+
+}
+
+module.exports = email;

@@ -1,19 +1,16 @@
 class EmailValide {
-#email
-  constructor(email) {
-    this.#email = this.#email;
-  }
 
-  valideEmail() {
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test();
 
-    if (!regex.test(this.#email)) {
+ static valideEmail(email) {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    
+    if (!regex.test(email)) {
       throw new Error("Invalid email");
     }
 
 
-    if (!this.#email) {
-        throw new Error("please send email");  
+    if (!email) {
+        throw new Error("please send email");
     }
 
     return true;
