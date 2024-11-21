@@ -34,7 +34,7 @@ class RegistrationUserController {
     const getUser = this.cache.get(`dadosUser`);
 
     if (getUser == undefined) {
-      throw new Error("The time to check your email has passed, please make a new request"  );
+      throw new Error("The time to check your email has passed, make a new request or enter an invalid code, check and try again" );
     }
 
     const { email, senha, code } = getUser
@@ -62,14 +62,14 @@ class RegistrationUserController {
          await db.exec(`COMMIT`)
 
          res.status(200).send({jwt: this.tokenJwt(lastID), register: true})
-         
+
     } catch (error) {
         await db.exec(`ROLLBACK`)
         throw new Error(error.message);
     }finally{
         await db.close()
     }
-  }
+  } 
 
   static tokenJwt(id){
     const config = {

@@ -6,6 +6,8 @@ class Api {
   static #port = process.env.PORT || 8080;
   static bodyParser = require(`body-parser`);
   static routerApi = require("./routers/router");
+  static swaggerUi = require('swagger-ui-express');
+  static swaggerDocs = require(`./configSwagger`)
   static cors = require(`cors`);
   static #configExpres() {
     const api = this.#express();
@@ -22,8 +24,10 @@ class Api {
   static routersApi() {
     const myApi = this.#configExpres();
     myApi.use(this.bodyParser.json());
+    myApi.use(this.#express.static(`public`))
     myApi.use(this.routerApi);
     myApi.use(this.cors());
+    myApi.use(`/doc`, this.swaggerUi.serve, this.swaggerUi.setup(this.swaggerDocs))
   }
 }
 

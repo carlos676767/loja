@@ -8,6 +8,8 @@ class checkDataRegistrationUser {
   static cache = require(`../cache/cacheData`)
   static Email = require("../utils/email/email")
   static RandomCod = require(`../utils/randomCods`)
+
+  
   static async routerVerfify(req, res) {
     try {
       const { email, senha } = req.body;
