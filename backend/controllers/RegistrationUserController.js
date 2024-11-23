@@ -1,4 +1,5 @@
 class RegistrationUserController {
+  "use strict"
   static cache = require(`../cache/cacheData`);
   static Sql = require("../db/database")
   static jwt = require(`jsonwebtoken`)

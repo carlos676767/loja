@@ -1,10 +1,10 @@
+"use strict"
 const emailValide = require(`../utils/validacoesEmail`)
 const validePasWord = require(`../utils/senhaValide`)
 
 const Sql = require("../db/database")
 
 class checkDataRegistrationUser {
-
   static cache = require(`../cache/cacheData`)
   static Email = require("../utils/email/email")
   static RandomCod = require(`../utils/randomCods`)
@@ -31,10 +31,11 @@ class checkDataRegistrationUser {
     try {
 
 
-      const user = await db.get('SELECT COUNT(*) AS COUNT FROM USER WHERE email = ?', [email]);
+      const user = await db.get('SELECT * FROM USER WHERE email = ?', [email]);
 
+      
 
-      if (user.count > 0) {
+      if (user) {
         throw new Error("the email provided already exists");
       }
 

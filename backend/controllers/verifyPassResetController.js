@@ -1,4 +1,5 @@
 class verifyPassResetController {
+  "use strict"
   static jwt = require(`jsonwebtoken`);
   static Email = require("../utils/email/email");
   static Sql = require("../db/database");

@@ -1,7 +1,10 @@
 const checkDataRegistrationUser = require("../controllers/checkDataRegistrationUser")
 const RegistrationUserController = require("../controllers/registrationUserController")
+const ResetPassWorld = require("../controllers/resetPassWord")
 const verifyPassResetController = require("../controllers/verifyPassResetController")
 const routerApi = require(`express`).Router()
+
+
 /**
  * @swagger
  * /register:
@@ -79,5 +82,8 @@ routerApi.post(`/confirmCode`, RegistrationUserController.router)//rota que conf
  */
 
 routerApi.post(`/password/forgot`,verifyPassResetController.router )
+
+routerApi.patch(`/resetPass`, ResetPassWorld.routers)
+
 
 module.exports = routerApi
