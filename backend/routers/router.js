@@ -1,8 +1,12 @@
 const checkDataRegistrationUser = require("../controllers/checkDataRegistrationUser")
+const Login = require("../controllers/loginUserController")
 const RegistrationUserController = require("../controllers/registrationUserController")
 const ResetPassWorld = require("../controllers/resetPassWord")
 const verifyPassResetController = require("../controllers/verifyPassResetController")
+
 const routerApi = require(`express`).Router()
+
+
 
 
 /**
@@ -84,6 +88,152 @@ routerApi.post(`/confirmCode`, RegistrationUserController.router)//rota que conf
 routerApi.post(`/password/forgot`,verifyPassResetController.router )
 
 routerApi.patch(`/resetPass`, ResetPassWorld.routers)
+
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   responses:
+ *     Unauthorized:
+ *       description: Acesso não autorizado
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               msg:
+ *                 type: string
+ *                 example: "the password is incorrect"
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Login
+ *     description: API de login para autenticação de usuários usando JWT
+ */
+
+
+/**
+ * @swagger
+ * /middleware-login:
+ *   get:
+ *     summary: Middleware de autenticação usando JWT
+ *     description: Valida o token JWT enviado nos headers da requisição.
+ *     tags: [Login]
+ *     security:
+ *       - BearerAuth: []  # Indica que é necessário fornecer um token JWT no header Authorization
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         description: Token JWT para autenticação.
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-jwt-token>  # Exemplo de como passar o token
+ *     responses:
+ *       200:
+ *         description: Token JWT válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "valid jwt token"
+ *                 authorized:
+ *                   type: boolean
+ *                   example: true
+ *       401:
+ *         description: Token inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "the token entered is invalid"
+ */
+
+routerApi.use(`/middleware-login`, Login.middlareLogin)
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Realiza login do usuário
+ *     description: Verifica o email e a senha e retorna um token JWT se as credenciais forem válidas.
+ *     tags: [Login]
+ *     requestBody:
+ *       description: Credenciais do usuário para login (email e senha)
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - senhaUser
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               senhaUser:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Login bem-sucedido, token gerado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                 login:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Erro de autenticação ou dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ *                   example: "the email provided does not exist"
+ *       401:
+ *         description: Senha incorreta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "the password is incorrect"
+ *       500:
+ *         description: Erro no servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+routerApi.post(`/login`, Login.router)
 
 
 module.exports = routerApi
