@@ -236,4 +236,65 @@ routerApi.use(`/middleware-login`, Login.middlareLogin)
 routerApi.post(`/login`, Login.router)
 
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Content
+ *     description: Content management and image upload
+ */
+
+/**
+ * @swagger
+ * /content:
+ *   post:
+ *     summary: Upload an image and submit content
+ *     description: Upload an image and submit content with validation for file size, format, and content length.
+ *     tags: [Here you can upload the content]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               conteudo:
+ *                 type: string
+ *                 description: The content text to be submitted.
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: The image file to be uploaded (jpg, jpeg, png formats).
+ *     responses:
+ *       201:
+ *         description: Content successfully registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: Content successfully registered
+ *       400:
+ *         description: Bad request, invalid content or file
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: Please send the content or the file
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: An error occurred while registering content, please try again.
+ */
+
 module.exports = routerApi
