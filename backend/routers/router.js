@@ -1,6 +1,9 @@
+
+const { RegisterContentController, Multer } = require("../controllers/authorization/registerContentController")
 const checkDataRegistrationUser = require("../controllers/checkDataRegistrationUser")
 const Login = require("../controllers/loginUserController")
 const RegistrationUserController = require("../controllers/registrationUserController")
+
 const ResetPassWorld = require("../controllers/resetPassWord")
 const verifyPassResetController = require("../controllers/verifyPassResetController")
 
@@ -64,6 +67,7 @@ routerApi.post(`/register`, checkDataRegistrationUser.routerVerfify)//para valid
  */
 
 routerApi.post(`/confirmCode`, RegistrationUserController.router)//rota que confirma o codigo da\ rota register e cria a conta.
+
 
 /**
  * @swagger
@@ -249,7 +253,7 @@ routerApi.post(`/login`, Login.router)
  *   post:
  *     summary: Upload an image and submit content
  *     description: Upload an image and submit content with validation for file size, format, and content length.
- *     tags: [Here you can upload the content]
+ *     tags: [Content]
  *     requestBody:
  *       required: true
  *       content:
@@ -259,11 +263,18 @@ routerApi.post(`/login`, Login.router)
  *             properties:
  *               conteudo:
  *                 type: string
- *                 description: The content text to be submitted.
- *               image:
+ *                 description: |
+ *                   The content text to be submitted. (Max length: 500 characters)
+ *               preco_conteudo:
+ *                 type: number
+ *                 format: float
+ *                 description: |
+ *                   The price of the content. (Example: 19.99)
+ *               file:
  *                 type: string
  *                 format: binary
- *                 description: The image file to be uploaded (jpg, jpeg, png formats).
+ *                 description: |
+ *                   The image file to be uploaded (acceptable formats: jpg, jpeg, png; max size: 5MB).
  *     responses:
  *       201:
  *         description: Content successfully registered
@@ -297,4 +308,21 @@ routerApi.post(`/login`, Login.router)
  *                   example: An error occurred while registering content, please try again.
  */
 
+
+
+const single =  Multer.multerConfig().single(`file`)
+
+routerApi.post(`/content`, (req, res, next) => {
+    single(req, res, (err) => {
+      if (err) {
+      return  next(err.message);
+      }
+      next()
+    
+    });
+ },   RegisterContentController.router);
+
+
+
+  
 module.exports = routerApi

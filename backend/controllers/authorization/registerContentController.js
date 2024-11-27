@@ -1,8 +1,9 @@
 "use strict";
+const path  = require(`path`);
 class Multer {
   static #multer = require(`multer`);
   static #uuid = require(`uuid`);
-  static #path = require(`path`);
+  static fs = require(`fs`)
   static multerConfig() {
     const storage = this.#multer.diskStorage({
       destination: (req, file, callback) => {
@@ -10,52 +11,55 @@ class Multer {
         callback(null, path);
       },
 
-      filename: (req, file, file) => {
-        file(null, this.#uuid.v7().concat(this.#path.extname(file.originalname)));
+      filename: (req, file, callback) => {
+        callback(null,file.originalname)
       },
     });
 
-    return this.#multer({ storage: storage, 
-      fileFilter: (req, file, callback) => {
-        this.verifyImagExtename(req, file, callback)
-        this.verifyImageSize(req, file, callback)
-    } });
+    return this.#multer({ storage: storage, fileFilter:   this.fileFilter } );
   }
 
-  static verifyImagExtename(req, file, callback) {
-    const extname = this.#path.extname(file);
+  static fileFilter(req, file, callback) {
+    const extname = path.extname(file.originalname);
+  
+    const extensionsImagesPertimidas = [".jpeg", ".jpg", ".png", "mp4", "mov", "avi"];
 
-    const extensionsImagesPertimidas = [".jpeg", ".jpg", ".png"];
-
-    if (!extensionsImagesPertimidas.includes(extname)) {
-      callback( new Error( "An error occurred while uploading the image. Please make sure the image is in the correct format (.jpg, .jpeg, .png) and try again.",false   ));
+    if (!extensionsImagesPertimidas.includes(extname)) { 
+    
+    return  callback( new Error( "An error occurred while uploading the image. Please make sure the image is in the correct format (.jpg, .jpeg, .png) and try again."   ));
     }
 
-    callback(null, true);
-  }
 
-
-  static verifyImageSize(req, file, callback){
     const sizeLimit = 20 * 1024 * 1024;
 
     if (file.size > sizeLimit) {
-      callback(new Error(`File size exceeds the 20MB limit.`, false))
+      
+      callback(new Error(`File size exceeds the 20MB limit`))
     }
 
-    callback(null, true)
+
+    callback(null, true);
+
   }
 }
 
-class SetContents {
+
+
+class RegisterContentController {
   static sqlLite = require(`../../db/database`)
   static async router(req, res){
     try {
-      const {conteudo} = req.body
-      const file = req.file
+      const {conteudo, preco_conteudo} = req.body
+      console.log(conteudo);
+      
+      const file = req.file.originalname
+      console.log(file);
+      
 
-      SetContents.validacoes(conteudo, file)
-      await SetContents.dbExecDados(file, conteudo, res)
+      RegisterContentController.validacoes(conteudo, file)
+      await RegisterContentController.dbExecDados(file, conteudo, res,preco_conteudo)
     } catch (error) {
+      
       res.status(400).send({msg: error.message})
     }
   }
@@ -83,27 +87,29 @@ class SetContents {
       throw new Error("No file uploaded.");
     }
 
-    const sizeLimitCaracter = 50
+
+    const sizeLimitCaracter = 20
     if (conteudo.length < sizeLimitCaracter) {
-      throw new Error(`content must be longer than 50 characters`)
+      throw new Error(`content must be longer than 20 characters`)
     }
 
 
   }
 
 
-  static async dbExecDados(imgname, conteudo, res){
+  static async dbExecDados(imgname, conteudo, res, PRECO_CONTEUDO){
     const db = await this.sqlLite.db()
     try {
       await db.exec(`BEGIN TRANSACTION`)
-      const query = `INSERT INTO CONTEUDO(DATACONTEUDO, NOME_IMG, CONTEUDO) VALUES(?, ?, ?)`
+      const query = `INSERT INTO CONTEUDO(DATACONTEUDO, NOME_IMG, CONTEUDO, PRECO_CONTEUDO) VALUES(?, ?, ?, ?)`
 
-      await db.run(query, [this.getDate(), imgname, conteudo])
+      await db.run(query, [this.getDate(), imgname, conteudo, PRECO_CONTEUDO])
 
       await db.exec(`COMMIT`)
 
       res.status(201).send({msg: `content successfully registered`})
     } catch (error) {
+
       await db.exec(`ROLLBACK`)
       throw new Error("An error occurred while registering content, please try again.");
     }finally{
@@ -112,5 +118,8 @@ class SetContents {
   }
 }
 
+module.exports = {
+  Multer,
+  RegisterContentController
+}
 
-module.exports = {SetContents, Multer}

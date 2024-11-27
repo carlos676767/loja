@@ -1,3 +1,5 @@
+const middlare = require('./middleware/multerMiddlare');
+
 require('dotenv').config();
 
 class Api {
@@ -25,9 +27,12 @@ class Api {
     const myApi = this.#configExpres();
     myApi.use(this.bodyParser.json());
     myApi.use(this.#express.static(`public`))
+    myApi.use(this.#express.static(`uploads/image`))
     myApi.use(this.routerApi);
     myApi.use(this.cors());
+    myApi.use(  middlare)
     myApi.use(`/doc`, this.swaggerUi.serve, this.swaggerUi.setup(this.swaggerDocs))
+
   }
 }
 
