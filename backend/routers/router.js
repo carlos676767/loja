@@ -2,6 +2,10 @@
 const { RegisterContentController, Multer } = require("../controllers/authorization/registerContentController")
 const checkDataRegistrationUser = require("../controllers/checkDataRegistrationUser")
 const Login = require("../controllers/loginUserController")
+const GetHistory = require("../controllers/payments/historyPaymentUserController")
+const { getHistoricy } = require("../controllers/payments/historyPaymentUserController")
+const StripeApi = require("../controllers/payments/methodsPayments/StripeApi")
+const PaymentsController = require("../controllers/payments/paymentsController")
 const RegistrationUserController = require("../controllers/registrationUserController")
 
 const ResetPassWorld = require("../controllers/resetPassWord")
@@ -324,5 +328,176 @@ routerApi.post(`/content`, (req, res, next) => {
 
 
 
+
+
+
+ /**
+ * @swagger
+ * components:
+ *   schemas:
+ *     PaymentRequest:
+ *       type: object
+ *       required:
+ *         - idsProdutos
+ *         - idUsuario
+ *         - metodoPagamento
+ *       properties:
+ *         idsProdutos:
+ *           type: string
+ *           description: Lista de IDs dos produtos a serem pagos, separados por vírgula.
+ *           example: "1,2,3"
+ *         idUsuario:
+ *           type: integer
+ *           description: ID do usuário que está realizando o pagamento.
+ *           example: 101
+ *         metodoPagamento:
+ *           type: string
+ *           description: Método de pagamento desejado, como "pix" ou "boleto".
+ *           enum:
+ *             - pix
+ *             - boleto
+ *           example: "boleto"
+ *     PaymentResponse:
+ *       type: object
+ *       properties:
+ *         url:
+ *           type: string
+ *           description: URL para o pagamento (se aplicável).
+ *           example: "https://payment.example.com"
+ *         status:
+ *           type: string
+ *           description: Status do pagamento.
+ *           example: "awaiting payment"
+ * 
+ * paths:
+ *   /payment:
+ *     post:
+ *       summary: Realiza o pagamento de um pedido.
+ *       description: Este endpoint realiza o pagamento utilizando os métodos Pix ou Boleto, dependendo da escolha do usuário.
+ *       operationId: createPayment
+ *       tags:
+ *         - Pagamento
+ *       requestBody:
+ *         description: Dados para realizar o pagamento.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaymentRequest'
+ *       responses:
+ *         '200':
+ *           description: Pagamento iniciado com sucesso.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/PaymentResponse'
+ *         '400':
+ *           description: Erro de validação ou entrada inválida.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   err:
+ *                     type: string
+ *                     description: Mensagem de erro.
+ *                     example: "Enter a valid payment method between bank slip and pix"
+ *         '404':
+ *           description: Usuário ou produto não encontrado.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   err:
+ *                     type: string
+ *                     description: Mensagem de erro.
+ *                     example: "The ID entered does not exist in the database."
+ */
+
+
+
+ routerApi.post(`/payment`, PaymentsController.router)
   
+
+
+routerApi.post(`/webhook`,  StripeApi.webWhook)
+
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Historic:
+ *       type: object
+ *       properties:
+ *         ID:
+ *           type: integer
+ *           description: ID do usuário.
+ *         iD_USER:
+ *           type: integer
+ *           description: ID do usuário no histórico de pagamento.
+ *         PAYMENT_DATE:
+ *           type: string
+ *           format: date-time
+ *           description: Data do pagamento.
+ *         AMOUNT:
+ *           type: number
+ *           description: Quantia paga.
+ *       example:
+ *         ID: 1
+ *         iD_USER: 1
+ *         PAYMENT_DATE: "2024-12-01T10:00:00.000Z"
+ *         AMOUNT: 150.50
+ */
+
+/**
+ * @swagger
+ * /history/{user}:
+ *   get:
+ *     summary: Recupera o histórico de pagamentos de um usuário.
+ *     description: Retorna uma lista com o histórico de pagamentos vinculados a um ID de usuário específico.
+ *     tags: [Histórico de Pagamento]
+ *     parameters:
+ *       - in: path
+ *         name: user
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário.
+ *     responses:
+ *       200:
+ *         description: Lista de históricos de pagamento.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 itens:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Historic'
+ *       400:
+ *         description: O ID do usuário não foi fornecido.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ *                   example: "enter the user id"
+ *       404:
+ *         description: Nenhum histórico de pagamento foi encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ *                   example: "There is no payment history for this user"
+ */
+
+routerApi.get(`/history/:user`, GetHistory.router)
 module.exports = routerApi
