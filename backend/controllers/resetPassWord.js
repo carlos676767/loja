@@ -9,7 +9,7 @@ class ResetPassWorld {
       if (token) {
         jwt.verify(token, process.env.SECRET_KEY_JWT, (err, decod) => {
           if (err) {
-            reject( new Error("The 5-minute expiration time to change the password has passed, make a new request"  )  );
+            reject(new Error("The 5-minute expiration time to change the password has passed, make a new request"));
           }
 
           const { email } = decod;
@@ -20,9 +20,9 @@ class ResetPassWorld {
       }
     });
   }
-  
+
   static async routers(req, res) {
-    const validePasWord = require(`../utils/senhaValide`);
+    const validePasWord = require(`../utils/SenhaValideService`);
     try {
       const email = await ResetPassWorld.verifyJwtToken(req, res);
 
@@ -60,7 +60,7 @@ class ResetPassWorld {
     } catch (error) {
       await db.exec(`ROLLBACK`);
       console.log(error);
-      
+
       throw new Error("Erro reset passWord", error);
     } finally {
       await db.close();
@@ -71,7 +71,7 @@ class ResetPassWorld {
     const db = await ResetPassWorld.#Sql.db();
     const { ID } = await db.get(`SELECT * FROM USER WHERE EMAIL = ?`, [email]);
     console.log(ID);
-    
+
     res.status(200).send({
       msg: `the password was changed successfully`,
       token: this.jwtAssign(ID),

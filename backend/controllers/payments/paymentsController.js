@@ -1,3 +1,5 @@
+const MercadoPagoPixController = require("./methodsPayments/MercadoPagoPixController");
+
 class PaymentsController {
   static Database = require(`.././../db/database`);
   static cache = require(`../../cache/cacheData`);
@@ -11,22 +13,31 @@ class PaymentsController {
 
       await PaymentsController.verifyEmail(idUsuario);
 
-      switch (metodoPagamento) {
-        case `pix`:
-          break;
+      const  { nameContents, priceContent } = await PaymentsController.getProducts( idsProdutos );
+     
 
-        case `boleto`:
-          const { nameContents, priceContent } = await PaymentsController.getProducts( idsProdutos );
-         
-          
+
+      const paymentMethods  = {
+        pix: async () => {
+          const {ticket_url,qr_code_base64}  = await MercadoPagoPixController.generatePayMent(priceContent, nameContents)
+          res.status(200).send({url: ticket_url, base64: qr_code_base64, status: `awaiting payment`})
+        },
+
+        boleto: async() => {
           const { url } = await PaymentsController.StripeApi.gerarPagamento( priceContent,   nameContents  );
-
           res.status(200).send({ url: url, status: `awaiting payment` });
-          break;
+        }
 
-        default:
-          throw new Error("please provide a valid option");
       }
+
+      const executePay = paymentMethods[metodoPagamento]
+      
+      if (executePay) {
+        return await executePay()
+      }
+
+      throw new Error("please provide a valid option");
+
     } catch (error) {
       res.status(200).send({ err: error.message });
     }

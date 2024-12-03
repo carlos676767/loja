@@ -1,15 +1,19 @@
 
-const { RegisterContentController, Multer } = require("../controllers/authorization/registerContentController")
+const { RegisterContentController } = require("../controllers/authorization/registerContentController")
 const checkDataRegistrationUser = require("../controllers/checkDataRegistrationUser")
 const Login = require("../controllers/loginUserController")
 const GetHistory = require("../controllers/payments/historyPaymentUserController")
 const { getHistoricy } = require("../controllers/payments/historyPaymentUserController")
 const StripeApi = require("../controllers/payments/methodsPayments/StripeApi")
 const PaymentsController = require("../controllers/payments/paymentsController")
+const ProductsLinkedWithUserController = require("../controllers/payments/ProductsLinkedWithUserController")
+const WebHookStripe = require("../controllers/payments/webhook/stripeWebhook")
 const RegistrationUserController = require("../controllers/registrationUserController")
 
 const ResetPassWorld = require("../controllers/resetPassWord")
 const verifyPassResetController = require("../controllers/verifyPassResetController")
+const MiddlareLoginService = require("../middleware/middlareLoginService")
+const Multer = require("../utils/multerConfigService")
 
 const routerApi = require(`express`).Router()
 
@@ -170,7 +174,7 @@ routerApi.patch(`/resetPass`, ResetPassWorld.routers)
  *                   example: "the token entered is invalid"
  */
 
-routerApi.use(`/middleware-login`, Login.middlareLogin)
+routerApi.use(`/middleware-login`, MiddlareLoginService.Oauth)
 
 /**
  * @swagger
@@ -420,7 +424,7 @@ routerApi.post(`/content`, (req, res, next) => {
   
 
 
-routerApi.post(`/webhook`,  StripeApi.webWhook)
+routerApi.post(`/stripeWebHook`,  WebHookStripe.webWhook)
 
 
 
@@ -500,4 +504,85 @@ routerApi.post(`/webhook`,  StripeApi.webWhook)
  */
 
 routerApi.get(`/history/:user`, GetHistory.router)
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     ProductTransaction:
+ *       type: object
+ *       properties:
+ *         ID_CONTEUDO:
+ *           type: integer
+ *           description: ID do conteúdo comprado pelo usuário.
+ *         CONTEUDO:
+ *           type: string
+ *           description: Descrição ou nome do conteúdo.
+ *         DIA_PAGAMENTO:
+ *           type: string
+ *           format: date
+ *           description: Data do pagamento.
+ *         HORA_PAGAMENTO:
+ *           type: string
+ *           format: time
+ *           description: Hora do pagamento.
+ *       example:
+ *         ID_CONTEUDO: 101
+ *         CONTEUDO: "Ebook de Programação"
+ *         DIA_PAGAMENTO: "2024-12-01"
+ *         HORA_PAGAMENTO: "14:35:00"
+ */
+
+/**
+ * @swagger
+ * /products/{user}:
+ *   get:
+ *     summary: Retorna os produtos e transações relacionadas a um usuário específico.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: user
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID do usuário.
+ *     responses:
+ *       200:
+ *         description: Lista de produtos e transações do usuário.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 transations:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ProductTransaction'
+ *       400:
+ *         description: O ID do usuário não foi fornecido.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ *                   example: "enter the user id"
+ *       404:
+ *         description: Nenhum produto encontrado para o usuário.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ *                   example: "There is no payment product for this user"
+ */
+
+
+routerApi.get(`/products/:user`, ProductsLinkedWithUserController.router)
+
+
 module.exports = routerApi

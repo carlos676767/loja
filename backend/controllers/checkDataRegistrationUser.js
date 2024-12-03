@@ -1,15 +1,15 @@
 "use strict"
-const emailValide = require(`../utils/validacoesEmail`)
-const validePasWord = require(`../utils/senhaValide`)
+const emailValide = require(`../utils/validacoesEmailService`)
+const validePasWord = require(`../utils/SenhaValideService`)
 
 const Sql = require("../db/database")
 
 class checkDataRegistrationUser {
   static cache = require(`../cache/cacheData`)
   static Email = require("../utils/email/email")
-  static RandomCod = require(`../utils/randomCods`)
+  static RandomCod = require(`../utils/RandomCodService`)
 
-  
+
   static async routerVerfify(req, res) {
     try {
       const { email, senha } = req.body;
@@ -33,7 +33,7 @@ class checkDataRegistrationUser {
 
       const user = await db.get('SELECT * FROM USER WHERE email = ?', [email]);
 
-      
+
 
       if (user) {
         throw new Error("the email provided already exists");
@@ -64,7 +64,7 @@ class checkDataRegistrationUser {
 
     this.setCacheDados(emailDestination, pass, code)
 
-    res.status(200).send({msg:`Please check your email, remembering you only have 5 minutes.`, emailSend: true})
+    res.status(200).send({ msg: `Please check your email, remembering you only have 5 minutes.`, emailSend: true })
   }
 
   static setCacheDados(email, senha, code) {
