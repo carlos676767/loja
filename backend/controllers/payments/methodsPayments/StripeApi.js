@@ -8,6 +8,7 @@ class StripeApi {
   static database = require(`../../../db/database`);
   static GetDate = require("../../../utils/getDATE");
   static getHours = require("../../../utils/getHours");
+  
 
   static #informacoesPagamento(valor, itens) {
     const valorParaMultiplicarEmCentavos = 100;
@@ -63,22 +64,27 @@ class StripeApi {
     await this.email.sendEmail(eu, emailUser, title, content);
   }
 
+
   static async webWhook(req, res) {
     const typeNotification = req.body.type;
 
     if (typeNotification === `charge.succeeded`) {
       console.log(`pagamento com sucesso.`);
-
       const user = StripeApi.#cache.get(`user`);
-      console.log(user);
-      
-      const { email, ID } = user;
+       
+      if (user) {
+        
+        const { email, ID } = user;
 
-      await StripeApi.historyPayment(ID)
+        await StripeApi.historyPayment(ID)
 
-      const charge = req.body.data.object;
+       
+        const charge = req.body.data.object;
 
-      await StripeApi.sendEmailComprovante(charge, email);
+        await StripeApi.sendEmailComprovante(charge, email);
+        await StripeApi.contentPay(ID)
+        
+      }
     }
   }
 
@@ -86,6 +92,7 @@ class StripeApi {
     const db = await this.database.db();
     try {
       await db.exec(`BEGIN TRANSACTION`)
+      
 
       const query = `INSERT INTO HISTORICO_PAGAMENTO (ID_USER, DIA_PAGAMENTO, HORA_PAGAMENTO)
 VALUES (?, ?, ?);
@@ -100,6 +107,31 @@ VALUES (?, ?, ?);
       throw new Error(error);
     }
   }
+
+
+  static async contentPay(ID){
+    const database = await this.database.db()
+    try {
+      const getIds = StripeApi.#cache.get(`idProducts`).split(` `)
+      
+
+      await database.exec(`BEGIN TRANSACTION`)
+      const query = `INSERT INTO CONTEUDOSCOMPRADOSUSUARIO (ID_CONTEUDO, ID_USUARIO) VALUES (?, ?)`
+
+      for (const idsProducts of getIds) {
+        await database.run(query, [idsProducts, ID])
+      }
+      await database.exec(`COMMIT`)
+    } catch (error) {
+      console.log(error);
+      
+      await database.exec(`ROLLBACK`)
+      throw new Error(error)
+    }
+  }
 }
 
 module.exports = StripeApi;
+
+
+

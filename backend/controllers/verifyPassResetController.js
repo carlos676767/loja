@@ -20,13 +20,11 @@ class verifyPassResetController {
     try {
       const query = `SELECT * FROM USER WHERE email = ?`;
       const emailExist = await db.get(query, [email]);
-
-
       
-
       if (!emailExist) {
         throw new Error("The email address provided does not exist in our database, please check if you have entered the correct email address");
       }
+
     } catch (error) {
       throw new Error(
         "Error when checking whether the email exists in any database, try again later"

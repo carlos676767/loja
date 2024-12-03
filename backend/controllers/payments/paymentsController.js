@@ -87,16 +87,14 @@ class PaymentsController {
     if (!resultsProducts) {
       throw new Error("the id entered does not exist in the database");
     }
-
+    
     const priceContent = resultsProducts.map((char) => char.PRECO_CONTEUDO)
       .reduce((acc, ac) => ac + acc, 0);
 
     const nameContents = resultsProducts.map((char) => char.NOME_IMG).join(`,`);
 
 
-    this.cache.set(`idProducts`, 
-      digitsFormate
-    )
+    this.cache.set(`idProducts`, digitsFormate)
 
     return {
       priceContent,

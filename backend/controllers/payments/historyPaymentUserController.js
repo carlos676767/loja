@@ -11,7 +11,7 @@ class GetHistory {
       }
 
       const historics = await GetHistory.getHistoricy(id);
-      res.status(200).send({ itens: historics });
+      res.status(200).send({ transations: historics });
     } catch (error) {
       res.status(200).send({ err: error.message });
     }
@@ -20,10 +20,10 @@ class GetHistory {
   static async getHistoricy(id) {
     const database = await this.#db.db();
     try {
+
         const query = `
         SELECT 
-          user.id, 
-          HISTORICO_PAGAMENTO.*
+          HISTORICO_PAGAMENTO.DIA_PAGAMENTO,  HISTORICO_PAGAMENTO.HORA_PAGAMENTO
         FROM 
           user
         JOIN 
@@ -35,10 +35,9 @@ class GetHistory {
         ORDER BY 
           user.ID ASC;
       `;
-      
+
 
       const historics = await database.all(query, [Number(id)]);
-      console.log(historics);
       
 
       if (historics.length == 0) {
