@@ -2,7 +2,6 @@ const { MercadoPagoConfig, Payment } = require("mercadopago");
 
 class MercadoPagoPixController {
   "use strict";
-
   static payment() {
     console.log(process.env.SECRET_KEY_MERCADO_PAGO);
     

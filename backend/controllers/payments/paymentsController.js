@@ -1,6 +1,7 @@
 const MercadoPagoPixController = require("./methodsPayments/MercadoPagoPixController");
 
 class PaymentsController {
+  "use strict";
   static Database = require(`.././../db/database`);
   static cache = require(`../../cache/cacheData`);
   static StripeApi = require("./methodsPayments/StripeApi");
@@ -15,8 +16,6 @@ class PaymentsController {
 
       const  { nameContents, priceContent } = await PaymentsController.getProducts( idsProdutos );
      
-
-
       const paymentMethods  = {
         pix: async () => {
           const {ticket_url,qr_code_base64}  = await MercadoPagoPixController.generatePayMent(priceContent, nameContents)
@@ -59,6 +58,8 @@ class PaymentsController {
     const db = await this.Database.db();
     try {
       const query = `SELECT * FROM USER WHERE ID = ?`;
+      console.log();
+      
       const user = await db.get(query, [idUser]);
 
       if (user === undefined) {
@@ -84,6 +85,7 @@ class PaymentsController {
   static async getProducts(idsProdutos) {
     const digits = idsProdutos.split(``).filter((char) => char !== `,`);
     
+    console.log(idsProdutos);
     
     const formattedVector = digits.map(() => `?`).join(` `);
    
@@ -93,18 +95,18 @@ class PaymentsController {
     const db = await this.Database.db();
     const digitsFormate = digits.join(`,`)
     const resultsProducts = await db.all(query, [digitsFormate]);
-
+  
     
-    if (!resultsProducts) {
+    if (!resultsProducts || resultsProducts.length === 0) {
       throw new Error("the id entered does not exist in the database");
     }
     
-    const priceContent = resultsProducts.map((char) => char.PRECO_CONTEUDO)
-      .reduce((acc, ac) => ac + acc, 0);
+    const priceContent = resultsProducts.map((char) => char.PRECO_CONTEUDO).reduce((acc, ac) => ac + acc, 0);
 
     const nameContents = resultsProducts.map((char) => char.NOME_IMG).join(`,`);
 
-
+    console.log(priceContent, `preco`,  nameContents);
+    
     this.cache.set(`idProducts`, digitsFormate)
 
     return {

@@ -13,7 +13,7 @@ class email {
   }
 
   static async sendEmail(text, emailUser, textTittle) {
-    console.log(process.env.EMAIL_YAHOO);
+   
     
     try {
       const email = this.#configEmail();

@@ -1,10 +1,10 @@
 class GetHistory {
   static #db = require(`../../db/database`);
-
+  "use strict";
   static async router(req, res) {
     try {
       const id = req.params.user
-      console.log(id);
+     
       
       if (!id) {
         throw new Error("enter the user id");
@@ -20,7 +20,6 @@ class GetHistory {
   static async getHistoricy(id) {
     const database = await this.#db.db();
     try {
-
         const query = `
         SELECT 
           HISTORICO_PAGAMENTO.DIA_PAGAMENTO,  HISTORICO_PAGAMENTO.HORA_PAGAMENTO
@@ -39,7 +38,6 @@ class GetHistory {
 
       const historics = await database.all(query, [Number(id)]);
       
-
       if (historics.length == 0) {
         throw new Error("There is no payment history for this user");
       }

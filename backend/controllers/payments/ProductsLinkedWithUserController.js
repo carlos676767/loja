@@ -4,7 +4,7 @@ class ProductsLinkedWithUserController {
   static async router(req, res) {
     try {
       const id = req.params.user;
-      console.log(id);
+
 
       if (!id) {
         throw new Error("enter the user id");

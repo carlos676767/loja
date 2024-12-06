@@ -11,6 +11,7 @@ const WebHookStripe = require("../controllers/payments/webhook/stripeWebhook")
 const RegistrationUserController = require("../controllers/registrationUserController")
 
 const ResetPassWorld = require("../controllers/resetPassWord")
+const UpdateUserController = require("../controllers/updateUserController")
 const verifyPassResetController = require("../controllers/verifyPassResetController")
 const MiddlareLoginService = require("../middleware/middlareLoginService")
 const Multer = require("../utils/multerConfigService")
@@ -584,5 +585,41 @@ routerApi.get(`/history/:user`, GetHistory.router)
 
 routerApi.get(`/products/:user`, ProductsLinkedWithUserController.router)
 
+
+
+/**
+ * @swagger
+ * /update-user:
+ *   put:
+ *     summary: Update a user field
+ *     description: Updates a specific field of a user in the database. Select either "email" or "senha" as the field to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               newValue:
+ *                 type: string
+ *                 description: New value for the field.
+ *               id:
+ *                 type: integer
+ *                 description: ID of the user to update.
+ *               opcao:
+ *                 type: string
+ *                 description: The field to update ("email" or "senha").
+ *             required:
+ *               - newValue
+ *               - id
+ *               - opcao
+ *     responses:
+ *       200:
+ *         description: User updated successfully.
+ *       400:
+ *         description: Invalid input or error during the update.
+ */
+
+routerApi.put(`/update-user`, UpdateUserController.router)
 
 module.exports = routerApi
