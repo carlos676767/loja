@@ -1,6 +1,7 @@
 
 const { RegisterContentController } = require("../controllers/authorization/registerContentController")
 const checkDataRegistrationUser = require("../controllers/checkDataRegistrationUser")
+const DeleteUserController = require("../controllers/deleteUserController")
 const Login = require("../controllers/loginUserController")
 const GetHistory = require("../controllers/payments/historyPaymentUserController")
 const { getHistoricy } = require("../controllers/payments/historyPaymentUserController")
@@ -622,4 +623,69 @@ routerApi.get(`/products/:user`, ProductsLinkedWithUserController.router)
 
 routerApi.put(`/update-user`, UpdateUserController.router)
 
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Error:
+ *       type: object
+ *       properties:
+ *         msg:
+ *           type: string
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: The ID of the user.
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Operations related to users.
+ */
+
+/**
+ * @swagger
+ * /deleteUser/{userId}:
+ *   delete:
+ *     summary: Deletes a user by ID
+ *     description: This endpoint deletes a user from the database using the provided ID.
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: ID of the user to be deleted.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User successfully deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: User deleted successfully.
+ *       400:
+ *         description: Invalid ID supplied
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized or invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+routerApi.delete(`/deleteUser/:userId`, DeleteUserController.router)
 module.exports = routerApi
