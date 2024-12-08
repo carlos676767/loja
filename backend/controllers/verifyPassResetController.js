@@ -1,20 +1,7 @@
-class verifyPassResetController {
-  "use strict"
-  static jwt = require(`jsonwebtoken`);
-  static Email = require("../utils/email/email");
+"use strict"
+
+class VerifyEmail {
   static Sql = require("../db/database");
-  static async router(req, res) {
-    try {
-      const { email } = req.body;
-
-      
-      await verifyPassResetController.verifyEmail(email);
-      await verifyPassResetController.setSendResetPass(email,res)
-    } catch (error) {
-      res.status(400).send({ err: error.message });
-    }
-  }
-
   static async verifyEmail(email) {
     const db = await this.Sql.db();
     try {
@@ -33,6 +20,11 @@ class verifyPassResetController {
       await db.close();
     }
   }
+}
+
+class EmailSendRequest {
+  static jwt = require(`jsonwebtoken`);
+  static Email = require("../utils/email/email");
 
   static async setSendResetPass(email, res) {
     const token = this.jwt.sign({ email }, process.env.SECRET_KEY_JWT, {
@@ -50,10 +42,23 @@ class verifyPassResetController {
         Se você não fez essa solicitação, por favor, ignore este e-mail. ⚠️`
       }
 
+      
       const {content, titleEmail} = config
       await this.Email.sendEmail(content, email,  titleEmail)
-
       res.status(200).send({msg: `has been sent to your email to change your password, you only have 5 minutes to change your password`})
+  }
+}
+
+
+class verifyPassResetController {
+  static async router(req, res) {
+    try {
+      const { email } = req.body;
+      await VerifyEmail.verifyEmail(email);
+      await EmailSendRequest.setSendResetPass(email,res)
+    } catch (error) {
+      res.status(400).send({ err: error.message });
+    }
   }
 } 
 

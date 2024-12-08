@@ -1,8 +1,42 @@
-class RegistrationUserController {
-  "use strict"
-  static cache = require(`../cache/cacheData`);
-  static Sql = require("../db/database")
+
+"use strict"
+
+class JsonWebToken {
   static jwt = require(`jsonwebtoken`)
+  static tokenJwt(id){
+    const config = {
+        id
+    }
+    return this.jwt.sign(config, process.env.SECRET_KEY_JWT, {expiresIn: `2h`})
+  }
+}
+
+
+class DatabaseService {
+  static Sql = require("../db/database")
+  static async insertUser(email, senha, res){
+    const db = await this.Sql.db()
+    try {
+         await db.exec(`BEGIN TRANSACTION`)
+
+         const {lastID} =  await db.run(`INSERT INTO USER(email, senha) VALUES(?, ?)`, [email,senha])
+
+         await db.exec(`COMMIT`)
+
+         res.status(200).send({jwt: JsonWebToken.tokenJwt(lastID), register: true})
+
+    } catch (error) {
+        await db.exec(`ROLLBACK`)
+        throw new Error(error.message);
+    }finally{
+        await db.close()
+    }
+  } 
+}
+
+class RegistrationUserController {
+  
+  static cache = require(`../cache/cacheData`);
   static async router(req, res) {
     try {
         const {codigo} = req.body
@@ -13,7 +47,7 @@ class RegistrationUserController {
         const codeConfirm = RegistrationUserController.verifyCodeInConfirm(codigo, code)
 
         if (codeConfirm) {
-        return  await RegistrationUserController.insertUser(email, senha, res)
+        return  await DatabaseService.insertUser(email, senha, res)
         
         }
 
@@ -26,8 +60,6 @@ class RegistrationUserController {
     if (!codigo) {
         throw new Error("enter the code");
     }
-
-    return true
   }
 
 
@@ -51,33 +83,6 @@ class RegistrationUserController {
     }
 
     return true
-  }
-
-  static async insertUser(email, senha, res){
-    const db = await this.Sql.db()
-    try {
-         await db.exec(`BEGIN TRANSACTION`)
-
-         const {lastID} =  await db.run(`INSERT INTO USER(email, senha) VALUES(?, ?)`, [email,senha])
-
-         await db.exec(`COMMIT`)
-
-         res.status(200).send({jwt: this.tokenJwt(lastID), register: true})
-
-    } catch (error) {
-        await db.exec(`ROLLBACK`)
-        throw new Error(error.message);
-    }finally{
-        await db.close()
-    }
-  } 
-
-  static tokenJwt(id){
-    const config = {
-        id
-    }
-
-    return this.jwt.sign(config, process.env.SECRET_KEY_JWT, {expiresIn: `2h`})
   }
 } 
 

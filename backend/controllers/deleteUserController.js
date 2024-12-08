@@ -21,6 +21,7 @@ class DatabaseService {
   }
 }
 
+
 class ValideId {
   static valideId(id) {
     if (!id) {
@@ -28,6 +29,7 @@ class ValideId {
     }
   }
 }
+
 
 class DeleteUserController extends DatabaseService {
   static async router(req, res) {
@@ -41,5 +43,6 @@ class DeleteUserController extends DatabaseService {
     }
   }
 }
+
 
 module.exports = DeleteUserController;

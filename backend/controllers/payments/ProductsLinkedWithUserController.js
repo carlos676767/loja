@@ -1,22 +1,5 @@
-class ProductsLinkedWithUserController {
+class DatabaseService {
   static #db = require(`../../db/database`);
-
-  static async router(req, res) {
-    try {
-      const id = req.params.user;
-
-
-      if (!id) {
-        throw new Error("enter the user id");
-      }
-
-      const historics = await ProductsLinkedWithUserController.getProducts(id);
-      res.status(200).send({ vinculations: historics });
-    } catch (error) {
-      res.status(200).send({ err: error.message });
-    }
-  }
-
   static async getProducts(id) {
     const database = await this.#db.db();
     try {
@@ -51,6 +34,29 @@ ORDER BY
       return user;
     } catch (error) {
       throw new Error(error);
+    }
+  }
+}
+
+class ValideId {
+  static valideIdUser(id) {
+    if (!id) {
+      throw new Error("enter the user id");
+    }
+  }
+}
+
+
+
+class ProductsLinkedWithUserController extends DatabaseService {
+  static async router(req, res) {
+    try {
+      const id = req.params.user;
+      ValideId.valideIdUser(id);
+      const historics = await DatabaseService.getProducts(id);
+      res.status(200).send({ vinculations: historics });
+    } catch (error) {
+      res.status(200).send({ err: error.message });
     }
   }
 }

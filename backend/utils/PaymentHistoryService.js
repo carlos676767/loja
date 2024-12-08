@@ -10,6 +10,7 @@ class PaymentHistoryService {
       await db.exec(`BEGIN TRANSACTION`);
 
       const query = `INSERT INTO HISTORICO_PAGAMENTO (ID_USER, DIA_PAGAMENTO, HORA_PAGAMENTO) VALUES (?, ?, ?);`;
+      
       await db.run(query, [
         ID_USER,
         PaymentHistoryService.#GetDate(),

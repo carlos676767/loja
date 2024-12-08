@@ -29,12 +29,8 @@ class MercadoPagoPixController {
   }
 
   static async generatePayMent(valorItem, nameItens){
-
-
     try {
-     
       const body = this.objectWithPaymentInformation((valorItem), nameItens)
-      console.log(body);
       
       const pay = await MercadoPagoPixController.payment().create(body)
 
@@ -42,8 +38,6 @@ class MercadoPagoPixController {
 
       return {ticket_url, qr_code_base64}
     } catch (error) {
-      console.log(error);
-      
       throw new Error("error creating payment");
     }
   }
