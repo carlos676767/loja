@@ -10,7 +10,7 @@ class PaymentHistoryService {
       await db.exec(`BEGIN TRANSACTION`);
 
       const query = `INSERT INTO HISTORICO_PAGAMENTO (ID_USER, DIA_PAGAMENTO, HORA_PAGAMENTO) VALUES (?, ?, ?);`;
-      
+
       await db.run(query, [
         ID_USER,
         PaymentHistoryService.#GetDate(),
@@ -46,7 +46,22 @@ class PaymentHistoryService {
     }
   }
 
-  
+  static async updateUSERtable(id) {
+    const db = await this.#database.db();
+    try {
+      await db.exec(`BEGIN TRANSACTION`);
+
+      const query = `UPDATE USER SET status_assinatura = ? WHERE ID = ?`;
+      await db.run(query, [`ASSINANTE`, id]);
+
+      await db.exec(`COMMIT`);
+    } catch (error) {
+      await db.exec(`ROLLBACK`);
+      throw new Error(error);
+    }finally{
+      await db.close()
+    }
+  }
 }
 
 module.exports = PaymentHistoryService;

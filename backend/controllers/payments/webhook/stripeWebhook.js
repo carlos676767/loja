@@ -18,6 +18,7 @@ class WebHookStripe {
 
         await SendPaymentReceipt.sendPaymentReceipt(charge.receipt_url, email);
         await PaymentHistoryService.contentPay(ID)
+        await PaymentHistoryService.updateUSERtable(ID)
         res.status(201)
       }
     }
