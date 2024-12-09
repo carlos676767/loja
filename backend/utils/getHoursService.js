@@ -4,5 +4,4 @@ const getHours = () => {
 };
 
 
-
 module.exports = getHours

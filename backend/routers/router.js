@@ -1,6 +1,7 @@
 
 const { RegisterContentController } = require("../controllers/authorization/registerContentController")
 const checkDataRegistrationUser = require("../controllers/checkDataRegistrationUser")
+const ApiMain = require("../controllers/contentsFilterController")
 const DeleteUserController = require("../controllers/deleteUserController")
 const Login = require("../controllers/loginUserController")
 const GetHistory = require("../controllers/payments/historyPaymentUserController")
@@ -19,7 +20,79 @@ const Multer = require("../utils/multerConfigService")
 
 const routerApi = require(`express`).Router()
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     FilterRequest:
+ *       type: object
+ *       required:
+ *         - option
+ *         - value
+ *       properties:
+ *         option:
+ *           type: string
+ *           description: The filter option (e.g., "valor" or "data")
+ *           example: valor
+ *         value:
+ *           type: string
+ *           description: The value to filter by
+ *           example: 100
+ *     FilterResponse:
+ *       type: object
+ *       properties:
+ *         itensFilter:
+ *           type: array
+ *           items:
+ *             type: object
+ *           description: List of filtered items
+ *         filterItensSucess:
+ *           type: boolean
+ *           description: Indicates if the filter operation was successful
+ *           example: true
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         err:
+ *           type: string
+ *           description: The error message
+ *           example: The item for the specified filter does not exist in our database, try another option.
+ *
+ * /filter/{option}/{value}:
+ *   get:
+ *     summary: Filter items based on the specified option and value
+ *     tags: [Filtering]
+ *     parameters:
+ *       - in: path
+ *         name: option
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The filter option (e.g., "valor" or "data")
+ *       - in: path
+ *         name: value
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The value to filter by
+ *     responses:
+ *       200:
+ *         description: Successful filtering
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FilterResponse'
+ *       400:
+ *         description: Invalid input or filtering error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 
+
+
+routerApi.get(`/filter/:option/:value`, ApiMain.router )
 
 
 /**
@@ -688,4 +761,7 @@ routerApi.put(`/update-user`, UpdateUserController.router)
  */
 
 routerApi.delete(`/deleteUser/:userId`, DeleteUserController.router)
+
+
+
 module.exports = routerApi
