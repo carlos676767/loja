@@ -1,5 +1,7 @@
 "use strict";
 
+const EmailValide = require("../utils/validacoesEmailService");
+
 class DatabaseService {
   static db = require(`../db/database`);
   static async login(email, senhaUser, res) {
@@ -25,6 +27,7 @@ class Login extends DatabaseService {
   static async router(req, res) {
     try {
       const { email, senhaUser } = req.body;
+      EmailValide.valideEmail(email)
       await DatabaseService.login(email, senhaUser, res);
     } catch (error) {
       res.status(400).send({ err: error.message });
