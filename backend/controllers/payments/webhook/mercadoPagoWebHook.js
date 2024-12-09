@@ -1,5 +1,10 @@
 const { default: axios } = require("axios");
 const PaymentHistoryService = require("../../../utils/PaymentHistoryService");
+const SendPaymentReceipt = require("../../../utils/SendPaymentReceipt");
+const RandomCod = require("../../../utils/RandomCodService");
+
+
+
 
 class DadosService {
   static #cache = require(`../../../cache/cacheData`);
@@ -9,11 +14,15 @@ class DadosService {
 
     await PaymentHistoryService.historyPayment(ID);
     await PaymentHistoryService.PaymentHistoryService(ID);
+    await PaymentHistoryService.updateUSERtable(ID)
+
+    await SendPaymentReceipt.sendPaymentReceipt(RandomCod.code(),email)
   }
 }
 
+
 class WebHookMercadoPago extends DadosService {
-  static async routerWebHookMp(req, res) {
+  static async main(req, res) {
     const idPay = req.body.id;
 
     const verifyPayMent = await axios( `https://api.mercadopago.com/v1/payments/${idPay}`);
@@ -23,6 +32,8 @@ class WebHookMercadoPago extends DadosService {
     if (status === "approved") {
       return await WebHookMercadoPago.dadosService();
     }
+
+
   }
 }
 

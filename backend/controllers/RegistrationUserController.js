@@ -34,35 +34,9 @@ class DatabaseService {
   } 
 }
 
-class RegistrationUserController {
-  
+
+class GetUser {
   static cache = require(`../cache/cacheData`);
-  static async router(req, res) {
-    try {
-        const {codigo} = req.body
-        RegistrationUserController.verifyCode(codigo)
-
-        const {code, senha,  email} = RegistrationUserController.verifyCache()
-
-        const codeConfirm = RegistrationUserController.verifyCodeInConfirm(codigo, code)
-
-        if (codeConfirm) {
-        return  await DatabaseService.insertUser(email, senha, res)
-        
-        }
-
-    } catch (error) {
-        res.status(400).send({err: error.message})
-    }
-  }
-
-  static verifyCode(codigo){
-    if (!codigo) {
-        throw new Error("enter the code");
-    }
-  }
-
-
   static verifyCache() {
     const getUser = this.cache.get(`dadosUser`);
 
@@ -71,10 +45,20 @@ class RegistrationUserController {
     }
 
     const { email, senha, code } = getUser
-    console.log(code);
+
     
     return {email,senha, code}
   }
+
+}
+
+class ValidacoesUser {
+  static verifyCode(codigo){
+    if (!codigo) {
+        throw new Error("enter the code");
+    }
+  }
+
 
 
   static verifyCodeInConfirm(codigoUserBody, codeInCache){
@@ -83,6 +67,28 @@ class RegistrationUserController {
     }
 
     return true
+  }
+}
+
+class RegistrationUserController extends ValidacoesUser {
+  static async router(req, res) {
+    try {
+        const {codigo} = req.body
+        ValidacoesUser.verifyCode(codigo)
+
+        const {code, senha,  email} = GetUser.verifyCache()
+
+        const codeConfirm = ValidacoesUser.verifyCodeInConfirm(codigo, code)
+
+        if (codeConfirm) {
+        return  await DatabaseService.insertUser(email, senha, res)
+        }
+
+        throw new Error("Error registering user, try again.");
+        
+    } catch (error) {
+        res.status(400).send({err: error.message})
+    }
   }
 } 
 

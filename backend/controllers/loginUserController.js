@@ -7,6 +7,7 @@ class DatabaseService {
   static async login(email, senhaUser, res) {
     const db = await this.db.db();
     try {
+
       const query = `SELECT * FROM USER WHERE email = ?`;
       const dbProcure = await db.get(query, [email]);
 
@@ -38,9 +39,9 @@ class Login extends DatabaseService {
     const { senha, ID } = db;
 
     if (senha === senhaUser) {
-      const token = this.tokenJwt.sign({ ID }, process.env.SECRET_KEY_JWT, {
-        expiresIn: `2h`,
-      });
+
+      const token = this.tokenJwt.sign({ ID }, process.env.SECRET_KEY_JWT, { expiresIn: `2h` });
+
       return res.status(200).send({ token: token, login: true });
     }
 
