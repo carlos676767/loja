@@ -1,8 +1,8 @@
 
 "use strict"
+import database from "../db/database.js";
 class FilterItem {
-  static db = require(`../db/database`);
-
+  static db = database
   static async getItemFilter(option, item) {
     const database = await this.db.db();
     const query = `SELECT * FROM CONTEUDO WHERE ${option} = ?`;
@@ -11,7 +11,7 @@ class FilterItem {
     const filterItem = await database.all(query, [item]);
     
 
-    if (filterItem.length == 0 || filterItem === undefined) {
+    if (filterItem.length === 0 || filterItem === undefined) {
       throw new Error( "The item for the specified filter does not exist in our database, try another option." );
     }
     
@@ -54,10 +54,12 @@ class Options extends FilterItem {
 }
 
 
-class ApiMain extends Options {
+ export default class ApiMain extends Options {
   static async router(req, res) {
     try {
       const { option, value } = req.params;
+  
+      
       const itens = await Options.option(option, value);
       return res.status(200) .send({ itensFilter: itens, filterItensSucess: true });
     } catch (error) {
@@ -66,5 +68,3 @@ class ApiMain extends Options {
   }
 }
 
-
-module.exports = ApiMain;

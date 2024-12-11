@@ -1,9 +1,11 @@
 "use strict";
 
-const EmailValide = require("../utils/validacoesEmailService");
+
+import EmailValide from "../utils/validacoesEmailService.js";
+import databaseDb from "../db/database.js";
 
 class DatabaseService {
-  static db = require(`../db/database`);
+  static db = databaseDb
   static async login(email, senhaUser, res) {
     const db = await this.db.db();
     try {
@@ -24,7 +26,7 @@ class DatabaseService {
   }
 }
 
-class Login extends DatabaseService {
+export default  class Login extends DatabaseService {
   static async router(req, res) {
     try {
       const { email, senhaUser } = req.body;
@@ -49,4 +51,4 @@ class Login extends DatabaseService {
   }
 }
 
-module.exports = Login;
+

@@ -1,6 +1,7 @@
+import sql from "../../db/database.js";
 
-class RegisterContentController {
-  static sqlLite = require(`../../db/database`)
+ export default class RegisterContentController {
+  static sqlLite =sql
   static async router(req, res){
     try {
       const {conteudo, preco_conteudo} = req.body
@@ -70,9 +71,5 @@ class RegisterContentController {
       await db.close()
     }
   }
-}
-
-module.exports = {
-  RegisterContentController
 }
 

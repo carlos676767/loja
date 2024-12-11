@@ -1,5 +1,7 @@
-class GetHistory {
-  static #db = require(`../../db/database`);
+ import database from "../../db/database.js";
+ 
+ export default class GetHistory {
+  static #db =database
   "use strict";
   static async router(req, res) {
     try {
@@ -49,4 +51,3 @@ class GetHistory {
   }
 }
 
-module.exports = GetHistory

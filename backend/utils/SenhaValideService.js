@@ -1,4 +1,4 @@
-class SenhaValide {
+ export default class SenhaValide {
   static regexSenhaValide = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
 
  static validacoesSenha(senha) {
@@ -18,4 +18,3 @@ class SenhaValide {
   } 
 }
 
-module.exports = SenhaValide;

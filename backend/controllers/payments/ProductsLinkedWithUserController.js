@@ -1,5 +1,6 @@
+import dbt from ".././../db/database.js";
 class DatabaseService {
-  static #db = require(`../../db/database`);
+  static #db = dbt
   static async getProducts(id) {
     const database = await this.#db.db();
     try {
@@ -22,8 +23,7 @@ ON
 WHERE 
     CONTEUDOSCOMPRADOSUSUARIO.ID_USUARIO = ?
 ORDER BY 
-    CONTEUDO.NOME_IMG ASC;
-            `;
+    CONTEUDO.NOME_IMG ASC`;
 
       const user = await database.all(query, [Number(id)]);
 
@@ -46,9 +46,7 @@ class ValideId {
   }
 }
 
-
-
-class ProductsLinkedWithUserController extends DatabaseService {
+export default  class ProductsLinkedWithUserController extends DatabaseService {
   static async router(req, res) {
     try {
       const id = req.params.user;
@@ -61,4 +59,4 @@ class ProductsLinkedWithUserController extends DatabaseService {
   }
 }
 
-module.exports = ProductsLinkedWithUserController;
+

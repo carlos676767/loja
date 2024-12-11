@@ -1,8 +1,8 @@
+import cache from "node-cache";
 class Cache {
-  static cache = require(`node-cache`);
   static CacheData() {
-    return new this.cache();
+    return new cache();
   }
 }
 
-module.exports = Cache.CacheData()
+export default Cache.CacheData();

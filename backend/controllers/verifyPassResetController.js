@@ -1,9 +1,11 @@
 "use strict"
 
+import Sql from "../db/database.js";
+import jwt from "jsonwebtoken";
+import Email from "../utils/email/email.js";
 class VerifyEmail {
-  static Sql = require("../db/database");
   static async verifyEmail(email) {
-    const db = await this.Sql.db();
+    const db = await Sql.db();
     try {
       const query = `SELECT * FROM USER WHERE email = ?`;
       const emailExist = await db.get(query, [email]);
@@ -22,12 +24,11 @@ class VerifyEmail {
   }
 }
 
+
 class EmailSendRequest {
-  static jwt = require(`jsonwebtoken`);
-  static Email = require("../utils/email/email");
 
   static async setSendResetPass(email, res) {
-    const token = this.jwt.sign({ email }, process.env.SECRET_KEY_JWT, {
+    const token = jwt.sign({ email }, process.env.SECRET_KEY_JWT, {
       expiresIn: `5m`,
     });
 
@@ -44,13 +45,13 @@ class EmailSendRequest {
 
       
       const {content, titleEmail} = config
-      await this.Email.sendEmail(content, email,  titleEmail)
+      await Email.sendEmail(content, email,  titleEmail)
       res.status(200).send({msg: `has been sent to your email to change your password, you only have 5 minutes to change your password`})
   }
 }
 
 
-class verifyPassResetController {
+ export default class verifyPassResetController {
   static async router(req, res) {
     try {
       const { email } = req.body;
@@ -63,4 +64,4 @@ class verifyPassResetController {
 } 
 
 
-module.exports = verifyPassResetController
+

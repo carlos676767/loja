@@ -1,24 +1,26 @@
+import  RegisterContentController  from "../controllers/authorization/registerContentController.js";
+import RouterInsert from "../controllers/cadastrarCupom.js";
+import checkDataRegistrationUser from "../controllers/checkDataRegistrationUser.js";
+import ApiMain from "../controllers/contentsFilterController.js";
+import DeleteUserController from "../controllers/deleteUserController.js";
+import Login from "../controllers/loginUserController.js";
+import GetHistory from "../controllers/payments/historyPaymentUserController.js";
+import PaymentsController from "../controllers/payments/paymentsController.js";
+import ProductsLinkedWithUserController from "../controllers/payments/ProductsLinkedWithUserController.js";
+import WebHookMercadoPago from "../controllers/payments/webhook/mercadoPagoWebHook.js";
+import WebHookStripe from "../controllers/payments/webhook/stripeWebhook.js";
+import RegistrationUserController from "../controllers/registrationUserController.js";
 
-const { RegisterContentController } = require("../controllers/authorization/registerContentController")
-const checkDataRegistrationUser = require("../controllers/checkDataRegistrationUser")
-const ApiMain = require("../controllers/contentsFilterController")
-const DeleteUserController = require("../controllers/deleteUserController")
-const Login = require("../controllers/loginUserController")
-const GetHistory = require("../controllers/payments/historyPaymentUserController")
-const { getHistoricy } = require("../controllers/payments/historyPaymentUserController")
-const StripeApi = require("../controllers/payments/methodsPayments/StripeApi")
-const PaymentsController = require("../controllers/payments/paymentsController")
-const ProductsLinkedWithUserController = require("../controllers/payments/ProductsLinkedWithUserController")
-const WebHookStripe = require("../controllers/payments/webhook/stripeWebhook")
-const RegistrationUserController = require("../controllers/registrationUserController")
+import ResetPassWorld from "../controllers/resetPassWord.js";
+import UpdateUserController from "../controllers/updateUserController.js";
 
-const ResetPassWorld = require("../controllers/resetPassWord")
-const UpdateUserController = require("../controllers/updateUserController")
-const verifyPassResetController = require("../controllers/verifyPassResetController")
-const MiddlareLoginService = require("../middleware/middlareLoginService")
-const Multer = require("../utils/multerConfigService")
+import verifyPassResetController from "../controllers/verifyPassResetController.js";
+import MiddlareLoginService from "../middleware/middlareLoginService.js";
+import Multer from "../utils/multerConfigService.js";
 
-const routerApi = require(`express`).Router()
+import express from "express";
+const routerApi = express.Router()
+
 
 /**
  * @swagger
@@ -763,5 +765,78 @@ routerApi.put(`/update-user`, UpdateUserController.router)
 routerApi.delete(`/deleteUser/:userId`, DeleteUserController.router)
 
 
+routerApi.post(`/WebHookMercadoPago`, WebHookMercadoPago.main)
 
-module.exports = routerApi
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     CouponRequest:
+ *       type: object
+ *       required:
+ *         - CUPOM
+ *         - VALOR_CUPOM
+ *         - DATA_EXPIRACAO
+ *         - TOTAL_USUARIOS_CUPOM
+ *       properties:
+ *         CUPOM:
+ *           type: string
+ *           description: The unique coupon code.
+ *           example: "DISCOUNT2024"
+ *         VALOR_CUPOM:
+ *           type: number
+ *           description: The value of the coupon in monetary units.
+ *           example: 50
+ *         DATA_EXPIRACAO:
+ *           type: string
+ *           description: The expiration date of the coupon in the format dd/mm/yyyy.
+ *           example: "12/10/2024"
+ *         TOTAL_USUARIOS_CUPOM:
+ *           type: number
+ *           description: The total number of users who can use the coupon.
+ *           example: 100
+ *     CouponResponse:
+ *       type: object
+ *       properties:
+ *         msg:
+ *           type: string
+ *           description: Success message indicating the coupon was registered.
+ *           example: "Coupon registered successfully."
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         err:
+ *           type: string
+ *           description: The error message describing what went wrong.
+ *           example: "The coupon value must be a number"
+ * 
+ * /cupom_register:
+ *   post:
+ *     summary: Registers a new coupon
+ *     description: This endpoint registers a new coupon into the database, including details such as coupon code, value, expiration date, and total available users.
+ *     tags: [cupom]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CouponRequest'
+ *     responses:
+ *       200:
+ *         description: Coupon registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CouponResponse'
+ *       400:
+ *         description: Error in coupon registration
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
+routerApi.post(`/cupom_register`, RouterInsert.main)
+
+export default routerApi

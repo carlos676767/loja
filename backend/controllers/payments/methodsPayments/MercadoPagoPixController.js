@@ -1,6 +1,7 @@
-const { MercadoPagoConfig, Payment } = require("mercadopago");
 
-class MercadoPagoPixController {
+
+import { MercadoPagoConfig, Payment } from 'mercadopago';
+ export default class MercadoPagoPixController {
   "use strict";
   static payment() {
     console.log(process.env.SECRET_KEY_MERCADO_PAGO);
@@ -43,4 +44,4 @@ class MercadoPagoPixController {
   }
 }
 
-module.exports = MercadoPagoPixController;
+

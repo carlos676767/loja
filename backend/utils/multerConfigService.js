@@ -1,14 +1,20 @@
 "use strict";
-const path = require(`path`);
-class Multer {
-  static #multer = require(`multer`);
-  static #uuid = require(`uuid`);
-  static fs = require(`fs`);
+
+import path from 'path';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+
+export default class Multer {
+  static #multer = multer;
+  static #uuid = uuidv4;
+  static fs = fs;
+
   static multerConfig() {
     const storage = this.#multer.diskStorage({
       destination: (req, file, callback) => {
-        const path = `C://Users//Administrator//Desktop//loja//backend//uploads//image`;
-        callback(null, path);
+        const uploadPath = 'C://Users//Administrator//Desktop//loja//backend//uploads//image';
+        callback(null, uploadPath);
       },
 
       filename: (req, file, callback) => {
@@ -49,4 +55,4 @@ class Multer {
   }
 }
 
-module.exports = Multer
+

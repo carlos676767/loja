@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtro de Itens</title>
+    <link rel="stylesheet" href="styles/pagamentoHistorico.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Filtre Seus Itens</h1>
+            <p>Escolha um filtro e insira um valor para filtrar os itens:</p>
+        </header>
+
+        <div class="filter-form">
+            <label for="option">Escolha o filtro:</label>
+            <select id="option" class="input-field">
+                <option value="valor">Valor</option>
+                <option value="data">Data</option>
+            </select>
+
+            <label for="value">Digite o valor:</label>
+            <input type="text" id="value" class="input-field" placeholder="Exemplo: 100" />
+
+            <button id="filterButton" class="btn">Aplicar Filtro</button>
+        </div>
+
+        <div class="item-list">
+            <h2>Itens Filtrados</h2>
+            <ul id="itemsList">
+                <!-- Itens serão carregados aqui -->
+            </ul>
+        </div>
+
+        <div id="errorMessage" class="error-message">
+            Nenhum item encontrado para o filtro selecionado. Tente outro valor.
+        </div>
+    </div>
+
+    <script src="script/pagamentoHistorico.js"></script>
+</body>
+</html>

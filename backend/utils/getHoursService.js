@@ -3,5 +3,4 @@ const getHours = () => {
   return `${agora.getHours().toString()}:${agora.getMinutes()}`;
 };
 
-
-module.exports = getHours
+export default getHours

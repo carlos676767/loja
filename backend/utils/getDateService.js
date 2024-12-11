@@ -1,4 +1,4 @@
-const GetDate = () => {
+const  GetDate = () => {
   const agora = new Date();
   const day = agora.getDay();
   const year = agora.getFullYear();
@@ -7,4 +7,5 @@ const GetDate = () => {
   return `${month}/${day}/${year}`;
 };
 
-module.exports = GetDate;
+
+export default GetDate

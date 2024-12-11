@@ -1,6 +1,7 @@
 
-class email {
-  static nodemailer = require("nodemailer");
+import emailMailer from "nodemailer";
+ export default class email {
+  static nodemailer = emailMailer
   static #configEmail() {
     const config = this.nodemailer.createTransport({
       service: "yahoo",
@@ -13,8 +14,6 @@ class email {
   }
 
   static async sendEmail(text, emailUser, textTittle) {
-   
-    
     try {
       const email = this.#configEmail();
       return await email.sendMail({
@@ -33,4 +32,3 @@ class email {
 
 }
 
-module.exports = email;

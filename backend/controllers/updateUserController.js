@@ -1,7 +1,10 @@
+import db from "../db/database.js";
+import SenhaValide from "../utils/SenhaValideService.js";
+import EmailValide from "../utils/validacoesEmailService.js";
+
 class databaseQueryService {
-  static db = require(`../db/database`);
   static async updateUser(newValue, id, opcao) {
-    const database = await this.db.db();
+    const database = await db.db();
     try {
       await database.exec(`BEGIN TRANSACTION`);
       const query = `UPDATE USER SET ${opcao} = ? WHERE id = ?`;
@@ -16,19 +19,15 @@ class databaseQueryService {
   }
 }
 
-class ValideItens {
-  static SenhaValide = require("../utils/SenhaValideService");
-  static EmailValide = require("../utils/validacoesEmailService");
 
+class ValideItens {
   static validacoes(opcao, newValue) {
     const options = {
       senha: () => {
-        ValideItens.SenhaValide.validacoesSenha(newValue);
+        SenhaValide.validacoesSenha(newValue);
       },
       email: () => {
-        ValideItens.EmailValide.valideEmail(
-            newValue
-        );
+        EmailValide.valideEmail(  newValue  );
       },
     };
 
@@ -42,7 +41,7 @@ class ValideItens {
   }
 }
 
-class UpdateUserController extends databaseQueryService {
+ export default class UpdateUserController extends databaseQueryService {
   static async router(req, res) {
     const { newValue, id, opcao } = req.body;
     try {
@@ -58,4 +57,3 @@ class UpdateUserController extends databaseQueryService {
   }
 }
 
-module.exports = UpdateUserController

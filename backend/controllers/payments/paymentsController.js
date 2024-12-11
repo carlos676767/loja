@@ -1,5 +1,7 @@
-const MercadoPagoPixController = require("./methodsPayments/MercadoPagoPixController");
+
 "use strict";
+import  MercadoPagoPixController  from "./methodsPayments/MercadoPagoPixController.js";
+import cacheData from "../../cache/cacheData.js"
 
 class ValidacoesService {
   static validacoes(idsProdutos, idUsuario, metodoPagamento) {
@@ -15,12 +17,13 @@ class ValidacoesService {
   }
 }
 
-
+import db from ".././../db/database.js";
+import stripe from "../payments/methodsPayments/StripeApi.js"
 class UserExistService {
-  static cache = require(`../../cache/cacheData`);
-  static Database = require(`.././../db/database`);
+  static cache = cacheData
+  static Database = db
   static async verifyEmail(idUser) {
-    const db = await this.Database.db();
+    const db = await this.Database.db()
     try {
       const query = `SELECT * FROM USER WHERE ID = ?`;
       
@@ -48,7 +51,8 @@ class UserExistService {
 
 
 class GetProductService {
-  static cache = require(`../../cache/cacheData`);
+  static cache = cacheData
+  static Database = db
   static async getProducts(idsProdutos) {
     const digits = idsProdutos.split(``).filter((char) => char !== `,`);
     
@@ -83,9 +87,8 @@ class GetProductService {
 }
 
 
-class PaymentsController {
-  static Database = require(`.././../db/database`);
-  static StripeApi = require("./methodsPayments/StripeApi");
+ export default class PaymentsController {
+  static StripeApi = stripe
   static async router(req, res) {
     const { idsProdutos, idUsuario, metodoPagamento } = req.body;
     try {
@@ -125,4 +128,3 @@ class PaymentsController {
 }
 
 
-module.exports = PaymentsController

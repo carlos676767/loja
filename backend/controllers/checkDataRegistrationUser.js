@@ -1,7 +1,10 @@
 "use strict"
 
-const Sql = require("../db/database")
 
+import  Sql  from "../db/database.js";
+import cache from "../cache/cacheData.js";
+import emailSend from "../utils/email/email.js";
+import codeRandom from "../utils/RandomCodService.js";
 class EmailExist {
   static async verificarEmailExiste(email) {
     const db = await Sql.db()
@@ -22,7 +25,7 @@ class EmailExist {
 }
 
 class SetCache {
-  static cache = require(`../cache/cacheData`)
+  static cache = cache
   static setCacheDados(email, senha, code) {
     return this.cache.set(`dadosUser`, {
       email,
@@ -32,9 +35,10 @@ class SetCache {
   }
 }
 
+
 class EmailCod extends SetCache {
-  static Email = require("../utils/email/email")
-  static RandomCod = require(`../utils/RandomCodService`)
+  static Email = emailSend
+  static RandomCod = codeRandom
 
   static async setDadosYsendEmail(email, senha, res) {
     const code = this.RandomCod.code()
@@ -59,7 +63,7 @@ class EmailCod extends SetCache {
 }
 
 
-class checkDataRegistrationUser {
+ export default class checkDataRegistrationUser {
   static async routerVerfify(req, res) {
     const emailValide = require(`../utils/validacoesEmailService`)
     const validePasWord = require(`../utils/SenhaValideService`)
@@ -76,4 +80,4 @@ class checkDataRegistrationUser {
 }
 
 
-module.exports = checkDataRegistrationUser;
+

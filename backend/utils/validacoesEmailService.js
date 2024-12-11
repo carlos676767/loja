@@ -1,4 +1,4 @@
-class EmailValide {
+ export default class EmailValide {
 
 
  static valideEmail(email) {
@@ -17,4 +17,4 @@ class EmailValide {
   }
 }
 
-module.exports = EmailValide
+

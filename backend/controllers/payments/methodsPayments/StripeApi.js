@@ -1,7 +1,8 @@
 
-class StripeApi {
+import stripe from "stripe"
+ export default class StripeApi {
   "use strict";
-  static #stripeApi = require("stripe")(process.env.SECRET_KEY_STRIPE);
+  static #stripeApi = stripe(`sk_test_51QPs1QBSDNyGjeuCk6d2qWug8e0wzorZ8euKtc76mWtjX2FgKrMOyMptQ6hB6SFQXUTZiP7rpbKjdLY1GGuJQxjM00M4JjCJCr`);
   static #informacoesPagamento(valor, itens) {
     const valorParaMultiplicarEmCentavos = 100;
     const valorEmCentavos = valor * valorParaMultiplicarEmCentavos;
@@ -43,8 +44,6 @@ class StripeApi {
     }
   }
 }
-
-module.exports = StripeApi;
 
 
 

@@ -1,8 +1,10 @@
-const PaymentHistoryService = require("../../../utils/PaymentHistoryService");
-const SendPaymentReceipt = require("../../../utils/SendPaymentReceipt");
 
-class WebHookStripe {
-  static #cache = require(`../../../cache/cacheData`);
+
+import PaymentHistoryService  from "../../../utils/PaymentHistoryService.js";
+import SendPaymentReceipt from "../../../utils/SendPaymentReceipt.js";
+import cacheData from "../../../cache/cacheData.js";
+ export default class WebHookStripe {
+  static #cache = cacheData
   static async webWhook(req, res) {
     const typeNotification = req.body.type;
 
@@ -25,4 +27,3 @@ class WebHookStripe {
   }
 }
 
-module.exports = WebHookStripe

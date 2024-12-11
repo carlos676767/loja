@@ -1,8 +1,15 @@
-class PaymentHistoryService {
-  static #database = require(`../db/database`);
-  static #GetDate = require("./getDateService");
-  static #getHours = require("./getHoursService");
-  static #cache = require(`./../cache/cacheData`);
+"use strict";
+
+import database from "../db/database.js";
+import GetDate from "./getDateService.js";
+import getHours from "./getHoursService.js";
+import cache from "./../cache/cacheData.js";
+
+export default class PaymentHistoryService {
+  static #database = database;
+  static #GetDate = GetDate;
+  static #getHours = getHours;
+  static #cache = cache;
 
   static async historyPayment(ID_USER) {
     const db = await this.#database.db();
@@ -58,10 +65,10 @@ class PaymentHistoryService {
     } catch (error) {
       await db.exec(`ROLLBACK`);
       throw new Error(error);
-    }finally{
-      await db.close()
+    } finally {
+      await db.close();
     }
   }
 }
 
-module.exports = PaymentHistoryService;
+

@@ -1,5 +1,7 @@
-class DatabaseService {
-  static database = require(`../db/database`);
+ import databaseDb from "../db/database.js";
+ 
+ class DatabaseService {
+  static database = databaseDb
 
   static async deleteUser(id) {
     const db = await DatabaseService.database.db();
@@ -31,7 +33,7 @@ class ValideId {
 }
 
 
-class DeleteUserController extends DatabaseService {
+export default class DeleteUserController extends DatabaseService {
   static async router(req, res) {
     try {
       const userId = req.params.userId;
@@ -45,4 +47,3 @@ class DeleteUserController extends DatabaseService {
 }
 
 
-module.exports = DeleteUserController;

@@ -1,5 +1,7 @@
-class SendPaymentReceipt {
-  static emailService = require("./email/email");
+
+import Email from "./email/email.js"
+ export default class SendPaymentReceipt {
+  static emailService = Email
 
   static async sendPaymentReceipt(charge, email) {
     const configs = {
@@ -16,4 +18,4 @@ class SendPaymentReceipt {
   }
 }
 
-module.exports = SendPaymentReceipt;
+

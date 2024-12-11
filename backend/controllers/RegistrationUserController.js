@@ -1,21 +1,22 @@
 "use strict";
-
+import email from "../utils/email/email.js";
+import jwt from "jsonwebtoken";
+import Sql from "../db/database.js";
+import cache from "../cache/cacheData.js";
 class JsonWebToken {
-  static jwt = require(`jsonwebtoken`);
   static tokenJwt(id) {
     const config = {
       id,
     };
-    return this.jwt.sign(config, process.env.SECRET_KEY_JWT, {
+    return jwt.sign(config, process.env.SECRET_KEY_JWT, {
       expiresIn: `2h`,
     });
   }
 }
 
 class DatabaseService {
-  static Sql = require("../db/database");
   static async insertUser(email, senha, res) {
-    const db = await this.Sql.db();
+    const db = await Sql.db();
     try {
       await db.exec(`BEGIN TRANSACTION`);
 
@@ -38,10 +39,10 @@ class DatabaseService {
   }
 }
 
+
 class GetUser {
-  static cache = require(`../cache/cacheData`);
   static verifyCache() {
-    const getUser = this.cache.get(`dadosUser`);
+    const getUser = cache.get(`dadosUser`);
 
     if (getUser == undefined) {
       throw new Error(
@@ -71,8 +72,9 @@ class ValidacoesUser {
   }
 }
 
+
+
 class ConfigEmailRegister {
-  static Email = require(`../utils/email/email`);
   static async sendEmail(user) {
     const configEmail = {
       text: `Olá, Estrela!  
@@ -85,11 +87,11 @@ conta no csdev assinaturas
     };
 
     const {text, title, userEmail} = configEmail
-    await ConfigEmailRegister.Email.sendEmail(text, userEmail, title)
+    await email.sendEmail(text, userEmail, title)
   }
 }
 
-class RegistrationUserController extends ValidacoesUser  {
+ export default class RegistrationUserController extends ValidacoesUser  {
   static async router(req, res) {
     try {
       const { codigo } = req.body;
@@ -111,4 +113,4 @@ class RegistrationUserController extends ValidacoesUser  {
   }
 }
 
-module.exports = RegistrationUserController;
+
