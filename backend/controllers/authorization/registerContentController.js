@@ -5,10 +5,8 @@ import sql from "../../db/database.js";
   static async router(req, res){
     try {
       const {conteudo, preco_conteudo} = req.body
-      console.log(conteudo);
       
       const file = req.file.originalname
-      console.log(file);
       
 
       RegisterContentController.validacoes(conteudo, file)

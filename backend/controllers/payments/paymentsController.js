@@ -3,6 +3,10 @@
 import  MercadoPagoPixController  from "./methodsPayments/MercadoPagoPixController.js";
 import cacheData from "../../cache/cacheData.js"
 
+import db from ".././../db/database.js";
+import stripe from "../payments/methodsPayments/StripeApi.js"
+import Cupom from "./cupomUsar.js";
+
 class ValidacoesService {
   static validacoes(idsProdutos, idUsuario, metodoPagamento) {
     const payMentsValides = [`pix`, `boleto`];
@@ -17,8 +21,6 @@ class ValidacoesService {
   }
 }
 
-import db from ".././../db/database.js";
-import stripe from "../payments/methodsPayments/StripeApi.js"
 class UserExistService {
   static cache = cacheData
   static Database = db
@@ -50,10 +52,10 @@ class UserExistService {
 }
 
 
-class GetProductService {
+class GetProductService extends Cupom  {
   static cache = cacheData
   static Database = db
-  static async getProducts(idsProdutos) {
+  static async getProducts(idsProdutos, cupom) {
     const digits = idsProdutos.split(``).filter((char) => char !== `,`);
     
 
@@ -73,14 +75,14 @@ class GetProductService {
     }
     
     const priceContent = resultsProducts.map((char) => char.PRECO_CONTEUDO).reduce((acc, ac) => ac + acc, 0);
-
+    const priceDescont = priceContent - Cupom.UseCupom()
     const nameContents = resultsProducts.map((char) => char.NOME_IMG).join(`,`);
 
     
     this.cache.set(`idProducts`, digitsFormate)
 
     return {
-      priceContent,
+      priceDescont,
       nameContents,
     };
   }
@@ -90,36 +92,39 @@ class GetProductService {
  export default class PaymentsController {
   static StripeApi = stripe
   static async router(req, res) {
-    const { idsProdutos, idUsuario, metodoPagamento } = req.body;
+    const { idsProdutos, idUsuario, metodoPagamento, cupom } = req.body;
     try {
     
-      
-      ValidacoesService.validacoes(idsProdutos, idUsuario, metodoPagamento);
+      if (cupom !== `nao` ) {
+        ValidacoesService.validacoes(idsProdutos, idUsuario, metodoPagamento);
 
-      await UserExistService.verifyEmail(idUsuario);
-
-      const  { nameContents, priceContent } = await GetProductService.getProducts( idsProdutos );
-     
-      const paymentMethods  = {
-        pix: async () => {
-          const {ticket_url,qr_code_base64}  = await MercadoPagoPixController.generatePayMent(priceContent, nameContents)
-          res.status(200).send({url: ticket_url, base64: qr_code_base64, status: `awaiting payment`})
-        },
-
-        boleto: async() => {
-          const { url } = await PaymentsController.StripeApi.gerarPagamento( priceContent,   nameContents  );
-          res.status(200).send({ url: url, status: `awaiting payment` });
+        await UserExistService.verifyEmail(idUsuario);
+  
+        const  { nameContents, priceContent } = await GetProductService.getProducts( idsProdutos, cupom );
+       
+        const paymentMethods  = {
+          pix: async () => {
+            const {ticket_url,qr_code_base64}  = await MercadoPagoPixController.generatePayMent(priceContent, nameContents)
+            res.status(200).send({url: ticket_url, base64: qr_code_base64, status: `awaiting payment`})
+          },
+  
+          boleto: async() => {
+            const { url } = await PaymentsController.StripeApi.gerarPagamento( priceContent,   nameContents  );
+            res.status(200).send({ url: url, status: `awaiting payment` });
+          }
+  
         }
-
+  
+        const executePay = paymentMethods[metodoPagamento]
+        
+        if (executePay) {
+          return await executePay()
+        }
+  
+        throw new Error("please provide a valid option");
       }
-
-      const executePay = paymentMethods[metodoPagamento]
       
-      if (executePay) {
-        return await executePay()
-      }
-
-      throw new Error("please provide a valid option");
+      
 
     } catch (error) {
       res.status(200).send({ err: error.message });
